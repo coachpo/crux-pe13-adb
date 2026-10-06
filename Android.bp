@@ -355,6 +355,11 @@ cc_library {
         "com.android.adbd",
         "test_com.android.adbd",
     ],
+
+    // The independent Crux daemon uses only this static implementation.
+    static: {
+        apex_available: ["//apex_available:platform", "com.android.adbd", "test_com.android.adbd"],
+    },
 }
 
 cc_test_host {
@@ -698,14 +703,17 @@ cc_library {
         "//bootable/recovery/minadbd",
         "//packages/modules/adb",
     ],
+
+    // The independent Crux daemon uses only this static implementation.
+    static: {
+        apex_available: ["//apex_available:platform", "com.android.adbd"],
+    },
 }
 
-cc_binary {
-    name: "adbd",
-    defaults: ["adbd_defaults", "host_adbd_supported", "libadbd_binary_dependencies"],
-    recovery_available: true,
+cc_defaults {
+    name: "adbd_binary_defaults",
+    defaults: ["adbd_defaults", "libadbd_binary_dependencies"],
     min_sdk_version: "30",
-    apex_available: ["com.android.adbd"],
 
     srcs: [
         "daemon/main.cpp",
@@ -743,6 +751,21 @@ cc_binary {
             ],
         }
     },
+}
+
+
+cc_binary {
+    name: "adbd",
+    defaults: ["adbd_binary_defaults", "host_adbd_supported"],
+    recovery_available: true,
+    apex_available: ["com.android.adbd"],
+}
+
+// Installed only by the Crux development product, before data/APEX activation.
+cc_binary {
+    name: "adbd_crux",
+    defaults: ["adbd_binary_defaults"],
+    apex_available: ["//apex_available:platform"],
 }
 
 phony {

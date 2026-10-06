@@ -98,6 +98,11 @@ cc_library {
         "libadb_tls_connection",
         "libprotobuf-cpp-lite",
     ],
+
+    // The independent Crux daemon uses only this static implementation.
+    static: {
+        apex_available: ["//apex_available:platform", "com.android.adbd"],
+    },
 }
 
 // For running atest (b/147158681)
